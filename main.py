@@ -25,26 +25,47 @@ def login():
     sign_in_button.click()
 
 
+def clear_popups():
+    buttons = driver.find_elements(By.XPATH, '/html/body/div[4]/div/div/div[2]/button')
+    if len(buttons) > 0:
+        print('Trying to clear popup.')
+        button = driver.find_element(By.XPATH, '/html/body/div[4]/div/div/div[2]/button')
+        print('Pressing', button.get_attribute('innerHTML'))
+        time.sleep(1)
+        button.click()
+        print('popup cleared')
+    else:
+        print('No popup to clear.')
+
+
 def add_student():
-    dashboard = 'https://schooleducation.southpunjab.gov.pk/SPeTS/dashboard.php'
-    print(dashboard)
+    add_more_students = driver.find_element(By.XPATH, '/html/body/div[2]/div/div/div[3]/div/div[2]/div[2]/a')
+    print('Clicking add more students...')
+    add_more_students.click()
     print('Ready to add students')
 
 
 try:
-    print('loading website')
-    element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'userName')))
-    print('website loaded. logging in')
+    print('Loading website...')
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'userName')))
+    print('Website loaded. Logging in...')
     login()
-    print('logged in. waiting for the page to refresh')
-    logged_in = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR,
-        'body > div.bootbox.modal.fade.bootbox-alert.show > div > div > div.modal-footer > button')))
-    print('page refreshed...')
-    print(logged_in)
-    logged_in.click()
+    print('Logged in. Waiting for the page to refresh...')
+    WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div/div/div[1]/div/div/h1')))
+    print('Page refreshed. Waiting for any pop to appear...')
+    # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div/div/div[2]/button')))
+    print('Popup appeared. Clearing popup...')
+    time.sleep(5)
+    clear_popups()
+    time.sleep(5)
+    print('Popup appeared. Clearing popup...')
+    clear_popups()
     add_student()
 
+except:
+    print('Error: something went wrong')
 finally:
+    print('Turning Off...')
     time.sleep(3000)
     driver.quit()
 
